@@ -44,6 +44,9 @@ public class Homework3 extends Application {
         ComboBox<String> categories = new ComboBox<>();
         Button addButton = new Button("Add New Item ->");
         Button deleteButton = new Button("Delete Selected Item ->");
+        Button Raise = new Button("Raise");
+        Button lower = new Button ("Lower");
+        Button View = new Button ("View Item Detail");
         
         tPane1.add(item, 0, 0);
         tPane1.add(titleText, 0, 1);
@@ -53,6 +56,9 @@ public class Homework3 extends Application {
         tPane1.add(deleteButton, 0,5);
         
         eventsPane.add(list, 3, 1);
+        eventsPane.add(Raise, 3, 2);
+        eventsPane.add(lower, 4, 2);
+        eventsPane.add(View, 5, 2);
         
         primaryStage = new Stage();
         Scene primaryScene = new Scene(eventsPane, 600, 450);
