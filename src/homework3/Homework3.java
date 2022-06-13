@@ -3,6 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+// this is a test hello maxine 
 package homework3;
 
 import javafx.application.Application;
