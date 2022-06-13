@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 public class Homework3 extends Application {
 
     Label item = new Label("New To-Do Item Title");
+    Label category = new Label("Category:");
     
     GridPane tPane1 = new GridPane();
     Tab tab1 = new Tab("Categories");
@@ -32,7 +33,15 @@ public class Homework3 extends Application {
         tabPane.getTabs().add(tab1);
         tab1.setClosable(false);
         
+        ComboBox<String> categories = new ComboBox<>();
+        Button addButton = new Button("Add New Item ->");
+        Button deleteButton = new Button("Delete Selected Item ->");
+        
         tPane1.add(item, 0, 0);
+        tPane1.add(categories, 0, 2);
+        tPane1.add(category, 0,3);
+        tPane1.add(addButton, 0,4);
+        tPane1.add(deleteButton, 0,5);
         
         primaryStage = new Stage();
         Scene primaryScene = new Scene(eventsPane, 600, 450);
