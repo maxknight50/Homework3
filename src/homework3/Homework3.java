@@ -18,6 +18,8 @@ import javafx.stage.Stage;
  */
 public class Homework3 extends Application {
 
+    Label item = new Label("New To-Do Item Title");
+    
     GridPane tPane1 = new GridPane();
     Tab tab1 = new Tab("Categories");
     GridPane eventsPane = new GridPane();
@@ -29,6 +31,8 @@ public class Homework3 extends Application {
         tab1.setContent(tPane1);
         tabPane.getTabs().add(tab1);
         tab1.setClosable(false);
+        
+        tPane1.add(item, 0, 0);
         
         primaryStage = new Stage();
         Scene primaryScene = new Scene(eventsPane, 600, 450);
