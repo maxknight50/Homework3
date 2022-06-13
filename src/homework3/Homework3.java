@@ -7,6 +7,7 @@
 package homework3;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -20,14 +21,21 @@ public class Homework3 extends Application {
 
     Label item = new Label("New To-Do Item Title");
     Label category = new Label("Category:");
+    TextField titleText = new TextField();
     
     GridPane tPane1 = new GridPane();
     Tab tab1 = new Tab("Categories");
     GridPane eventsPane = new GridPane();
+
     TabPane tabPane = new TabPane();
+
+    ListView<Item> list = new ListView<>();
+   // list.setPadding(new Insets(5));
 
     @Override
     public void start(Stage primaryStage) {
+        eventsPane.setPadding(new Insets(10, 10, 10, 10));
+        eventsPane.setHgap(5);
         eventsPane.add(tabPane, 0, 1);
         tab1.setContent(tPane1);
         tabPane.getTabs().add(tab1);
@@ -38,10 +46,13 @@ public class Homework3 extends Application {
         Button deleteButton = new Button("Delete Selected Item ->");
         
         tPane1.add(item, 0, 0);
-        tPane1.add(categories, 0, 2);
-        tPane1.add(category, 0,3);
+        tPane1.add(titleText, 0, 1);
+        tPane1.add(category, 0,2);
+        tPane1.add(categories, 0, 3);
         tPane1.add(addButton, 0,4);
         tPane1.add(deleteButton, 0,5);
+        
+        eventsPane.add(list, 3, 1);
         
         primaryStage = new Stage();
         Scene primaryScene = new Scene(eventsPane, 600, 450);
