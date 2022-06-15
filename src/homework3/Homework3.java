@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-// this is a test hello maxine 
 package homework3;
 
+import java.io.Serializable;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -14,81 +9,76 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 /**
- *
- * @author coolm
+ * Maxine Knight, Zachary Taylor 
+ * Homework 3
  */
-public class Homework3 extends Application {
+public class Homework3 extends Application implements Serializable {
 
+    // Create menu bar
+    MenuBar menuBar = new MenuBar();
+    Menu catMenu = new Menu("Categories");
+    MenuItem item1 = new MenuItem("Edit Categories...");
+
+    // Create labels and buttons
     Label item = new Label("New To-Do Item Title");
     Label category = new Label("Category:");
     TextField titleText = new TextField();
-    
-    GridPane tPane1 = new GridPane();
-    Tab tab1 = new Tab("Categories");
-    GridPane eventsPane = new GridPane();
+    ComboBox<String> categories = new ComboBox<>();
+    Button addButton = new Button("Add New Item ->");
+    Button deleteButton = new Button("Delete Selected Item ->");
+    Button raise = new Button("Raise");
+    Button lower = new Button("Lower");
+    Button view = new Button("View Item Detail");
 
-    TabPane tabPane = new TabPane();
+    // Create GridPanes
+    GridPane overallPane = new GridPane(); 
+    GridPane listControl = new GridPane();
+    GridPane buttonPane = new GridPane();
+    GridPane newPane = new GridPane();
+    GridPane mnu = new GridPane();
 
-    ListView<Item> list = new ListView<>();
-   // list.setPadding(new Insets(5));
+    ListView<ToDoItem> list = new ListView<>();
 
     @Override
     public void start(Stage primaryStage) {
-        eventsPane.setPadding(new Insets(10, 10, 10, 10));
-        eventsPane.setHgap(5);
-        eventsPane.add(tabPane, 0, 1);
-        tab1.setContent(tPane1);
-        tabPane.getTabs().add(tab1);
-        tab1.setClosable(false);
-        
-        ComboBox<String> categories = new ComboBox<>();
-        Button addButton = new Button("Add New Item ->");
-        Button deleteButton = new Button("Delete Selected Item ->");
-        Button Raise = new Button("Raise");
-        Button lower = new Button ("Lower");
-        Button View = new Button ("View Item Detail");
-        
-        tPane1.add(item, 0, 0);
-        tPane1.add(titleText, 0, 1);
-        tPane1.add(category, 0,2);
-        tPane1.add(categories, 0, 3);
-        tPane1.add(addButton, 0,4);
-        tPane1.add(deleteButton, 0,5);
-        
-        eventsPane.add(list, 3, 1);
-        eventsPane.add(Raise, 3, 2);
-        eventsPane.add(lower, 4, 2);
-        eventsPane.add(View, 5, 2);
-        
+        // list.setMinWidth (200.0);
+        catMenu.getItems().add(item1);
+        menuBar.getMenus().add(catMenu);
+
+        buttonPane.setPadding(new Insets(10, 10, 10, 10));
+        buttonPane.setHgap(5);
+//        buttonPane.add(tabPane, 0, 1);
+//        tab1.setContent(tPane1);
+//        tabPane.getTabs().add(tab1);
+//        tab1.setClosable(false);
+
+        newPane.add(list, 1, 1);
+
+        mnu.add(menuBar, 0, 0);
+        buttonPane.add(item, 0, 1);
+        buttonPane.add(titleText, 0, 2);
+        buttonPane.add(category, 0, 3);
+        buttonPane.add(categories, 0, 4);
+        buttonPane.add(addButton, 0, 5);
+        buttonPane.add(deleteButton, 0, 6);
+
+//        eventsPane.add(list, 2, 1);
+        listControl.add(raise, 1, 0);
+        listControl.add(lower, 2, 0);
+        listControl.add(view, 3, 0);
+
+        overallPane.add(mnu, 0, 0);
+        overallPane.add(buttonPane, 0, 1);
+        overallPane.add(newPane, 1, 1);
+        overallPane.add(listControl, 1, 3);
         primaryStage = new Stage();
-        Scene primaryScene = new Scene(eventsPane, 600, 450);
+        Scene primaryScene = new Scene(overallPane, 600, 550);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("ToDo");
-        primaryStage.show();  
-        
-//        Button btn = new Button();
-//        btn.setText("Say 'Hello World'");
-//        btn.setOnAction(new EventHandler<ActionEvent>() {
-//            
-//            @Override
-//            public void handle(ActionEvent event) {
-//                System.out.println("Hello World!");
-//            }
-//        });
-//        
-//        StackPane root = new StackPane();
-//        root.getChildren().add(btn);
-//        
-//        Scene scene = new Scene(root, 300, 250);
-//        
-//        primaryStage.setTitle("Hello World!");
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
+        primaryStage.show();
+
     }
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         launch(args);
     }
