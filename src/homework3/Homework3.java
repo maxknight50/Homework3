@@ -31,7 +31,7 @@ public class Homework3 extends Application implements Serializable {
     Button raise = new Button("Raise");
     Button lower = new Button("Lower");
     Button view = new Button("View Item Detail");
-    
+
     // For Edit Categories
     TextField catTxt = new TextField();
     Button catAdd = new Button("Add");
@@ -92,7 +92,7 @@ public class Homework3 extends Application implements Serializable {
     }
 
     ///////////
-    public void SmallWindow() {        
+    public void SmallWindow() {
 
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
@@ -108,13 +108,20 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("Edit Categories");
         primaryStage.show();
 
-//        btnSendBack.setOnAction(e -> {
-//            
-//        });
+        catAdd.setOnAction(e -> {
+            catObsList.add(catTxt.getText());
+            catListView.getItems().add(catTxt.getText());
+        });
+
+        delete.setOnAction(e -> {
+            int index = catListView.getSelectionModel().getSelectedIndex();
+            String itemToRemove = catListView.getSelectionModel().getSelectedItem();
+            catListView.getItems().remove(index);
+            catObsList.remove(index);
+        });
     }
 
-
-public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 
