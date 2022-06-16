@@ -4,7 +4,10 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,10 +58,14 @@ public class Homework3 extends Application implements Serializable {
     ListView<ToDoItem> toDoList = new ListView<>();
 
     ToDoItem storedObject; //STORES OBJECT FOR LATER USE
+    FileInputStream readFile2;
+    DataInputStream readCatData;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         // list.setMinWidth (200.0);
+        // Stop method, override
+
         catMenu.getItems().add(editCat);
         menuBar.getMenus().add(catMenu);
         categories = new ComboBox(catObsList);
@@ -90,17 +97,32 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("ToDo");
         primaryStage.show();
+       
 
+        // Create separate method, readDataIn. Load data to application, call immediately after show
         try {
-            String filePath = "todoitemdata.dat";
-            File file = new File(filePath);
-            if (doesFileExist(file) == false) {
-                System.out.println("File created: " + file.createNewFile());
+             ReadAndSet();
+            String filePath1 = "todoitemdata.dat";
+            String filePath2 = "categoriesdata.dat";
+            File toDoFile = new File(filePath1);
+            File categoryFile = new File(filePath2);
+
+            if (doesFileExist(toDoFile) == false) {
+                System.out.println("File 1 created: " + toDoFile.createNewFile());
             } else {
-                System.out.println("File exists");
+                System.out.println("File 1 exists");
                 FileInputStream readFile = new FileInputStream("todoitemdata.dat"); // Pass in originial file
-                DataInputStream readData = new DataInputStream(readFile);
+                DataInputStream readToDoData = new DataInputStream(readFile);
             }
+            if (doesFileExist(categoryFile) == false) {
+                System.out.println("File 2 created: " + categoryFile.createNewFile());
+            } else {
+                System.out.println("File 2 exists");
+                readFile2 = new FileInputStream("categoriesdata.dat"); // Pass in originial file
+                readCatData = new DataInputStream(readFile2);
+
+            }
+
         } catch (EOFException e) {
             // Since it is an endless loop, this will catch when the file ends and allow the program to continue
         }
@@ -149,6 +171,40 @@ public class Homework3 extends Application implements Serializable {
         });
     }
 
+    @Override
+    public void stop() throws FileNotFoundException {
+//        try {
+//            FileOutputStream catBinOutput = new FileOutputStream("categoriesdata.dat");
+//            ObjectOutputStream catObjectOutput = new ObjectOutputStream(catBinOutput);
+//
+//            System.out.println("Closing");
+//            for (int i = 0; i < catObsList.size(); i++) {
+//                System.out.println(catObsList.get(i));
+//                catObjectOutput.writeObject(catObsList.get(i));
+//            }
+//            catObjectOutput.close();
+//
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+    }
+
+    public void ReadAndSet() {
+        System.out.println("Here!");
+        try {
+            while (true) {
+                String cat = readCatData.readUTF();
+                System.out.println(cat);
+                catObsList.add(cat);
+                catListView.getItems().add(cat);
+            }
+        } catch (EOFException e) {
+
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
     /**
      * ********************************************
      * Creates the Edit Categories pop up window
@@ -175,6 +231,7 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("Edit Categories");
         primaryStage.show();
 
+        // Read from file and pull in categories? 
         // Button to add the user-entered category into the ListView
         catAdd.setOnAction(e -> {
             catObsList.add(catTxt.getText());
