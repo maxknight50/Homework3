@@ -39,9 +39,6 @@ public class Homework3 extends Application implements Serializable {
     Button delete = new Button("Delete Selected");
     ObservableList<String> catObsList = FXCollections.observableArrayList();
     ListView<String> catListView = new ListView<>();
-    
-//    // For Edit To-Do
-//    TextField cat;
 
     // Create GridPanes
     GridPane overallPane = new GridPane();
@@ -51,8 +48,8 @@ public class Homework3 extends Application implements Serializable {
     GridPane mnu = new GridPane();
 
     ListView<ToDoItem> toDoList = new ListView<>();
-    
-    ToDoItem object;
+
+    ToDoItem storedObject; //STORES OBJECT FOR LATER USE
 
     @Override
     public void start(Stage primaryStage) {
@@ -63,10 +60,6 @@ public class Homework3 extends Application implements Serializable {
 
         buttonPane.setPadding(new Insets(10, 10, 10, 10));
         buttonPane.setHgap(5);
-//        buttonPane.add(tabPane, 0, 1);
-//        tab1.setContent(tPane1);
-//        tabPane.getTabs().add(tab1);
-//        tab1.setClosable(false);
 
         newPane.add(toDoList, 1, 1);
 
@@ -96,27 +89,33 @@ public class Homework3 extends Application implements Serializable {
         item1.setOnAction(e -> {
             EditCategories();
         });
-        
+
         view.setOnAction(e -> {
-            int index = toDoList.getSelectionModel().getSelectedIndex();
-            System.out.println("INDEX" + index);
+            int index = toDoList.getSelectionModel().getSelectedIndex(); // Find the selected item index
             // Find the object that is in that index
             // Pull the category and the item title
             // Pass those into the method so they can be populated into TextField
             // Another observable list??
-            String storedObject = catListView.getSelectionModel().getSelectedItem();
-            System.out.println("THIS " + storedObject);
-            EditToDo();
+            storedObject = toDoList.getSelectionModel().getSelectedItem(); // Store the object in that index
+
+            EditToDo(storedObject.getCategory(), storedObject.getToDoTitle()); // Pull the category and item title, pass to new window
         });
 
         addButton.setOnAction(e -> {
             System.out.println(categories.getValue());
             System.out.println(titleText.getText());
-            toDoList.getItems().add(new ToDoItem((String) categories.getValue(), titleText.getText()));
+            toDoList.getItems().add(new ToDoItem((String) categories.getValue(), titleText.getText())); // Read selected values, add the new object to the list
+        });
+
+        deleteButton.setOnAction(e -> {
+            int index = toDoList.getSelectionModel().getSelectedIndex();
+            toDoList.getItems().remove(index);
         });
     }
 
-    ///////////
+/**********************************************
+ * Creates the Edit Categories pop up window
+ *********************************************/
     public void EditCategories() {
 
         Stage primaryStage = new Stage();
@@ -145,35 +144,38 @@ public class Homework3 extends Application implements Serializable {
             catObsList.remove(index);
         });
     }
-    
-    public void EditToDo() {
+
+ /**********************************************
+ * Creates the Edit To-Do pop up window
+ *********************************************/
+    public void EditToDo(String category, String title) {
 
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
 
-        TextField cat = new TextField();
-        TextField item = new TextField();
-        TextField notes = new TextField();
+        TextField cat = new TextField(category);
+        TextField item = new TextField(title);
+        TextArea notes = new TextArea(storedObject.getLongDescription());
+        notes.setMinHeight(200);
+        notes.setWrapText(true);
         Button save = new Button("Save Changes -->");
-        
+
         primaryPane.add(cat, 0, 0);
         primaryPane.add(item, 0, 1);
-        primaryPane.add(notes, 0, 2);
+        primaryPane.add(notes, 0, 2, 2, 2);
         primaryPane.add(save, 1, 1);
         primaryPane.setAlignment(Pos.CENTER);
-        
-        Scene primaryScene = new Scene(primaryPane, 400, 400);
+
+        Scene primaryScene = new Scene(primaryPane, 400, 390);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Edit To-Do Item");
         primaryStage.show();
-        
-        
 
         save.setOnAction(e -> {
             //ToDoItem object = new ToDoItem();
             System.out.println(notes.getText());
-            
-            
+            storedObject.setLongDescription(notes.getText());
+
         });
     }
 
