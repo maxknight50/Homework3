@@ -2,6 +2,8 @@ package homework3;
 
 import java.io.Serializable;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -34,7 +36,8 @@ public class Homework3 extends Application implements Serializable {
     TextField catTxt = new TextField();
     Button catAdd = new Button("Add");
     Button delete = new Button("Delete Selected");
-
+    ObservableList<String> catObsList = FXCollections.observableArrayList();
+    ListView<String> catListView = new ListView<>();
 
     // Create GridPanes
     GridPane overallPane = new GridPane();
@@ -83,7 +86,7 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("ToDo");
         primaryStage.show();
 
-        addButton.setOnAction(e -> {
+        item1.setOnAction(e -> {
             SmallWindow();
         });
     }
@@ -94,12 +97,13 @@ public class Homework3 extends Application implements Serializable {
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
 
-        primaryPane.add(catTxt, 0, 0);
-        primaryPane.add(catAdd, 0, 1);
-        primaryPane.add(delete, 0, 2);
+        primaryPane.add(catListView, 0, 0);
+        primaryPane.add(catTxt, 0, 1);
+        primaryPane.add(catAdd, 0, 2);
+        primaryPane.add(delete, 0, 3);
         primaryPane.setAlignment(Pos.CENTER);
 
-        Scene primaryScene = new Scene(primaryPane, 400, 300);
+        Scene primaryScene = new Scene(primaryPane, 400, 400);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Edit Categories");
         primaryStage.show();
