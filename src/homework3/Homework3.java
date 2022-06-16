@@ -25,7 +25,8 @@ public class Homework3 extends Application implements Serializable {
     Label item = new Label("New To-Do Item Title");
     Label category = new Label("Category:");
     TextField titleText = new TextField();
-    ComboBox<String> categories = new ComboBox<>();
+    ComboBox categories;
+    //ComboBox<String> categories = new ComboBox<>();
     Button addButton = new Button("Add New Item ->");
     Button deleteButton = new Button("Delete Selected Item ->");
     Button raise = new Button("Raise");
@@ -38,6 +39,9 @@ public class Homework3 extends Application implements Serializable {
     Button delete = new Button("Delete Selected");
     ObservableList<String> catObsList = FXCollections.observableArrayList();
     ListView<String> catListView = new ListView<>();
+    
+//    // For Edit To-Do
+//    TextField cat;
 
     // Create GridPanes
     GridPane overallPane = new GridPane();
@@ -46,13 +50,16 @@ public class Homework3 extends Application implements Serializable {
     GridPane newPane = new GridPane();
     GridPane mnu = new GridPane();
 
-    ListView<ToDoItem> list = new ListView<>();
+    ListView<ToDoItem> toDoList = new ListView<>();
+    
+    ToDoItem object;
 
     @Override
     public void start(Stage primaryStage) {
         // list.setMinWidth (200.0);
         catMenu.getItems().add(item1);
         menuBar.getMenus().add(catMenu);
+        categories = new ComboBox(catObsList);
 
         buttonPane.setPadding(new Insets(10, 10, 10, 10));
         buttonPane.setHgap(5);
@@ -61,7 +68,7 @@ public class Homework3 extends Application implements Serializable {
 //        tabPane.getTabs().add(tab1);
 //        tab1.setClosable(false);
 
-        newPane.add(list, 1, 1);
+        newPane.add(toDoList, 1, 1);
 
         mnu.add(menuBar, 0, 0);
         buttonPane.add(item, 0, 1);
@@ -87,12 +94,30 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.show();
 
         item1.setOnAction(e -> {
-            SmallWindow();
+            EditCategories();
+        });
+        
+        view.setOnAction(e -> {
+            int index = toDoList.getSelectionModel().getSelectedIndex();
+            System.out.println("INDEX" + index);
+            // Find the object that is in that index
+            // Pull the category and the item title
+            // Pass those into the method so they can be populated into TextField
+            // Another observable list??
+            String storedObject = catListView.getSelectionModel().getSelectedItem();
+            System.out.println("THIS " + storedObject);
+            EditToDo();
+        });
+
+        addButton.setOnAction(e -> {
+            System.out.println(categories.getValue());
+            System.out.println(titleText.getText());
+            toDoList.getItems().add(new ToDoItem((String) categories.getValue(), titleText.getText()));
         });
     }
 
     ///////////
-    public void SmallWindow() {
+    public void EditCategories() {
 
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
@@ -118,6 +143,37 @@ public class Homework3 extends Application implements Serializable {
             String itemToRemove = catListView.getSelectionModel().getSelectedItem();
             catListView.getItems().remove(index);
             catObsList.remove(index);
+        });
+    }
+    
+    public void EditToDo() {
+
+        Stage primaryStage = new Stage();
+        GridPane primaryPane = new GridPane();
+
+        TextField cat = new TextField();
+        TextField item = new TextField();
+        TextField notes = new TextField();
+        Button save = new Button("Save Changes -->");
+        
+        primaryPane.add(cat, 0, 0);
+        primaryPane.add(item, 0, 1);
+        primaryPane.add(notes, 0, 2);
+        primaryPane.add(save, 1, 1);
+        primaryPane.setAlignment(Pos.CENTER);
+        
+        Scene primaryScene = new Scene(primaryPane, 400, 400);
+        primaryStage.setScene(primaryScene);
+        primaryStage.setTitle("Edit To-Do Item");
+        primaryStage.show();
+        
+        
+
+        save.setOnAction(e -> {
+            //ToDoItem object = new ToDoItem();
+            System.out.println(notes.getText());
+            
+            
         });
     }
 

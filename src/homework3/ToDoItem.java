@@ -40,6 +40,10 @@ public class ToDoItem implements Serializable {
         this.toDoTitle = toDoTitle;
     }
 
+    @Override
+    public String toString() {
+        return this.category + "   " + this.toDoTitle; 
+    }
     
 }
     
