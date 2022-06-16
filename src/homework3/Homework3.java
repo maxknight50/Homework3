@@ -111,11 +111,20 @@ public class Homework3 extends Application implements Serializable {
             int index = toDoList.getSelectionModel().getSelectedIndex();
             toDoList.getItems().remove(index);
         });
+        
+        ////////******//////////////
+        raise.setOnAction(e -> { 
+            int index = toDoList.getSelectionModel().getSelectedIndex();
+            //toDoList.getSelectionModel().selectedIndexProperty();
+            toDoList.getItems().remove(index);
+        });
     }
 
-/**********************************************
- * Creates the Edit Categories pop up window
- *********************************************/
+    /**
+     * ********************************************
+     * Creates the Edit Categories pop up window
+ ********************************************
+     */
     public void EditCategories() {
 
         Stage primaryStage = new Stage();
@@ -145,9 +154,11 @@ public class Homework3 extends Application implements Serializable {
         });
     }
 
- /**********************************************
- * Creates the Edit To-Do pop up window
- *********************************************/
+    /**
+     * ********************************************
+     * Creates the Edit To-Do pop up window
+ ********************************************
+     */
     public void EditToDo(String category, String title) {
 
         Stage primaryStage = new Stage();
