@@ -1,6 +1,12 @@
 package homework3;
 
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -17,27 +23,25 @@ import javafx.stage.Stage;
  */
 public class Homework3 extends Application implements Serializable {
 
+    ArrayList<ToDoItem> list = new ArrayList<>();
+
     // Create menu bar
     MenuBar menuBar = new MenuBar();
     Menu catMenu = new Menu("Categories");
-    MenuItem item1 = new MenuItem("Edit Categories...");
+    MenuItem editCat = new MenuItem("Edit Categories...");
 
     // Create labels and buttons
     Label item = new Label("New To-Do Item Title");
     Label category = new Label("Category:");
     TextField titleText = new TextField();
     ComboBox categories;
-    //ComboBox<String> categories = new ComboBox<>();
+
     Button addButton = new Button("Add New Item ->");
     Button deleteButton = new Button("Delete Selected Item ->");
     Button raise = new Button("Raise");
     Button lower = new Button("Lower");
     Button view = new Button("View Item Detail");
 
-    // For Edit Categories
-    TextField catTxt = new TextField();
-    Button catAdd = new Button("Add");
-    Button delete = new Button("Delete Selected");
     ObservableList<String> catObsList = FXCollections.observableArrayList();
     ListView<String> catListView = new ListView<>();
 
@@ -53,9 +57,9 @@ public class Homework3 extends Application implements Serializable {
     ToDoItem storedObject; //STORES OBJECT FOR LATER USE
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         // list.setMinWidth (200.0);
-        catMenu.getItems().add(item1);
+        catMenu.getItems().add(editCat);
         menuBar.getMenus().add(catMenu);
         categories = new ComboBox(catObsList);
 
@@ -87,49 +91,60 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("ToDo");
         primaryStage.show();
 
-        item1.setOnAction(e -> {
-            EditCategories();
+        try {
+            String filePath = "todoitemdata.dat";
+            File file = new File(filePath);
+            if (doesFileExist(file) == false) {
+                System.out.println("File created: " + file.createNewFile());
+            } else {
+                System.out.println("File exists");
+                FileInputStream readFile = new FileInputStream("todoitemdata.dat"); // Pass in originial file
+                DataInputStream readData = new DataInputStream(readFile);
+            }
+        } catch (EOFException e) {
+            // Since it is an endless loop, this will catch when the file ends and allow the program to continue
+        }
+
+        editCat.setOnAction(e -> {
+            EditCategories(); // Call edit categories when menu is selected
         });
 
         view.setOnAction(e -> {
             int index = toDoList.getSelectionModel().getSelectedIndex(); // Find the selected item index
-            // Find the object that is in that index
-            // Pull the category and the item title
-            // Pass those into the method so they can be populated into TextField
-            // Another observable list??
             storedObject = toDoList.getSelectionModel().getSelectedItem(); // Store the object in that index
-
             EditToDo(storedObject.getCategory(), storedObject.getToDoTitle()); // Pull the category and item title, pass to new window
         });
 
+        // Button to add the user-selected category and titleText into the list
         addButton.setOnAction(e -> {
-            System.out.println(categories.getValue());
-            System.out.println(titleText.getText());
             toDoList.getItems().add(new ToDoItem((String) categories.getValue(), titleText.getText())); // Read selected values, add the new object to the list
         });
 
+        // Button to delete the selected item from the list
         deleteButton.setOnAction(e -> {
             int index = toDoList.getSelectionModel().getSelectedIndex();
             toDoList.getItems().remove(index);
         });
 
-        ////////******//////////////
+        // Button to raise priority. Ensures item is not at top of the list
         raise.setOnAction(e -> {
-            int index = toDoList.getSelectionModel().getSelectedIndex();
-            if (index > 0) {
-                storedObject = toDoList.getSelectionModel().getSelectedItem();
-                toDoList.getItems().remove(index);
-                toDoList.getItems().add(index - 1, storedObject);
+            int index = toDoList.getSelectionModel().getSelectedIndex(); // Finds selected index
+            if (index > 0) { // Only if the index is not 0
+                storedObject = toDoList.getSelectionModel().getSelectedItem(); // Store the object
+                toDoList.getItems().remove(index); // Remove the item at the index
+                toDoList.getItems().add(index - 1, storedObject); // Add the object at the previous index
+                toDoList.getSelectionModel().clearAndSelect(index - 1);
             }
         });
 
+        // Button to lower priority. Ensures item is not at the bottom of the list
         lower.setOnAction(e -> {
-            System.out.println(toDoList.getItems().size() - 1);
             int index = toDoList.getSelectionModel().getSelectedIndex();
-            if (index != toDoList.getItems().size() - 1) {
+            if (index != toDoList.getItems().size() - 1) { // Only if the index is not at the bottom of the list
                 storedObject = toDoList.getSelectionModel().getSelectedItem();
                 toDoList.getItems().remove(index);
                 toDoList.getItems().add(index + 1, storedObject);
+                toDoList.getSelectionModel().clearAndSelect(index + 1);
             }
         });
     }
@@ -144,6 +159,11 @@ public class Homework3 extends Application implements Serializable {
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
 
+        // Text fields and buttons
+        TextField catTxt = new TextField();
+        Button catAdd = new Button("Add");
+        Button delete = new Button("Delete Selected");
+
         primaryPane.add(catListView, 0, 0);
         primaryPane.add(catTxt, 0, 1);
         primaryPane.add(catAdd, 0, 2);
@@ -155,11 +175,13 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("Edit Categories");
         primaryStage.show();
 
+        // Button to add the user-entered category into the ListView
         catAdd.setOnAction(e -> {
             catObsList.add(catTxt.getText());
             catListView.getItems().add(catTxt.getText());
         });
 
+        // Button to delete the selected category from the ListView
         delete.setOnAction(e -> {
             int index = catListView.getSelectionModel().getSelectedIndex();
             String itemToRemove = catListView.getSelectionModel().getSelectedItem();
@@ -178,9 +200,10 @@ public class Homework3 extends Application implements Serializable {
         Stage primaryStage = new Stage();
         GridPane primaryPane = new GridPane();
 
+        // TextFields and Button
         TextField cat = new TextField(category);
         TextField item = new TextField(title);
-        TextArea notes = new TextArea(storedObject.getLongDescription());
+        TextArea notes = new TextArea(storedObject.getLongDescription()); // If anything is stored in description, add it to the notes
         notes.setMinHeight(200);
         notes.setWrapText(true);
         Button save = new Button("Save Changes -->");
@@ -197,11 +220,13 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.show();
 
         save.setOnAction(e -> {
-            //ToDoItem object = new ToDoItem();
-            System.out.println(notes.getText());
-            storedObject.setLongDescription(notes.getText());
+            storedObject.setLongDescription(notes.getText()); // Set the description to what is in the notes
 
         });
+    }
+
+    public boolean doesFileExist(File file) {
+        return file.exists();
     }
 
     public static void main(String[] args) {
