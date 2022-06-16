@@ -1,6 +1,7 @@
 package homework3;
 
 import java.io.Serializable;
+import java.util.Collections;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -111,19 +112,32 @@ public class Homework3 extends Application implements Serializable {
             int index = toDoList.getSelectionModel().getSelectedIndex();
             toDoList.getItems().remove(index);
         });
-        
+
         ////////******//////////////
-        raise.setOnAction(e -> { 
+        raise.setOnAction(e -> {
             int index = toDoList.getSelectionModel().getSelectedIndex();
-            //toDoList.getSelectionModel().selectedIndexProperty();
-            toDoList.getItems().remove(index);
+            if (index > 0) {
+                storedObject = toDoList.getSelectionModel().getSelectedItem();
+                toDoList.getItems().remove(index);
+                toDoList.getItems().add(index - 1, storedObject);
+            }
+        });
+
+        lower.setOnAction(e -> {
+            System.out.println(toDoList.getItems().size() - 1);
+            int index = toDoList.getSelectionModel().getSelectedIndex();
+            if (index != toDoList.getItems().size() - 1) {
+                storedObject = toDoList.getSelectionModel().getSelectedItem();
+                toDoList.getItems().remove(index);
+                toDoList.getItems().add(index + 1, storedObject);
+            }
         });
     }
 
     /**
      * ********************************************
      * Creates the Edit Categories pop up window
- ********************************************
+     * *******************************************
      */
     public void EditCategories() {
 
@@ -157,7 +171,7 @@ public class Homework3 extends Application implements Serializable {
     /**
      * ********************************************
      * Creates the Edit To-Do pop up window
- ********************************************
+     * *******************************************
      */
     public void EditToDo(String category, String title) {
 
