@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,7 +60,9 @@ public class Homework3 extends Application implements Serializable {
 
     ToDoItem storedObject; //STORES OBJECT FOR LATER USE
     FileInputStream readFile2;
-    DataInputStream readCatData;
+    ObjectInputStream readCatData;
+    private FileInputStream readFile;
+    private ObjectInputStream readToDoData;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -97,11 +100,9 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("ToDo");
         primaryStage.show();
-       
 
         // Create separate method, readDataIn. Load data to application, call immediately after show
         try {
-             ReadAndSet();
             String filePath1 = "todoitemdata.dat";
             String filePath2 = "categoriesdata.dat";
             File toDoFile = new File(filePath1);
@@ -111,17 +112,19 @@ public class Homework3 extends Application implements Serializable {
                 System.out.println("File 1 created: " + toDoFile.createNewFile());
             } else {
                 System.out.println("File 1 exists");
-                FileInputStream readFile = new FileInputStream("todoitemdata.dat"); // Pass in originial file
-                DataInputStream readToDoData = new DataInputStream(readFile);
+                this.readFile = new FileInputStream("todoitemdata.dat"); // Pass in originial file
+                this.readToDoData = new ObjectInputStream(readFile);
             }
             if (doesFileExist(categoryFile) == false) {
                 System.out.println("File 2 created: " + categoryFile.createNewFile());
             } else {
                 System.out.println("File 2 exists");
                 readFile2 = new FileInputStream("categoriesdata.dat"); // Pass in originial file
-                readCatData = new DataInputStream(readFile2);
+                readCatData = new ObjectInputStream(readFile2);
 
             }
+
+            readAndSet();
 
         } catch (EOFException e) {
             // Since it is an endless loop, this will catch when the file ends and allow the program to continue
@@ -173,27 +176,32 @@ public class Homework3 extends Application implements Serializable {
 
     @Override
     public void stop() throws FileNotFoundException {
-//        try {
-//            FileOutputStream catBinOutput = new FileOutputStream("categoriesdata.dat");
-//            ObjectOutputStream catObjectOutput = new ObjectOutputStream(catBinOutput);
-//
-//            System.out.println("Closing");
-//            for (int i = 0; i < catObsList.size(); i++) {
-//                System.out.println(catObsList.get(i));
-//                catObjectOutput.writeObject(catObsList.get(i));
-//            }
-//            catObjectOutput.close();
-//
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
+        createFile("categoriesdata.dat", catObsList);
+        createFile("todoitemdata.dat", toDoList.getItems());
     }
 
-    public void ReadAndSet() {
+    public void createFile(String fileName, ObservableList list) {
+        try {
+            FileOutputStream output = new FileOutputStream(fileName);
+            ObjectOutputStream objectOutput = new ObjectOutputStream(output);
+
+            System.out.println("Closing");
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println(list.get(i));
+                objectOutput.writeObject(list.get(i));
+            }
+            objectOutput.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void readAndSet() {
         System.out.println("Here!");
         try {
             while (true) {
-                String cat = readCatData.readUTF();
+                String cat = (String) readCatData.readObject();
                 System.out.println(cat);
                 catObsList.add(cat);
                 catListView.getItems().add(cat);
@@ -201,7 +209,18 @@ public class Homework3 extends Application implements Serializable {
         } catch (EOFException e) {
 
         } catch (Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
+        }
+        try {
+            while (true) {
+                ToDoItem toDoItem = (ToDoItem) readToDoData.readObject();
+                System.out.println(toDoItem);
+                toDoList.getItems().add(toDoItem);
+            }
+        } catch (EOFException e) {
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
