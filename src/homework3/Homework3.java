@@ -1,6 +1,5 @@
 package homework3;
 
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,11 +20,16 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 /**
- * Maxine Knight, Zachary Taylor Homework 3
+ * Maxine Knight, Zachary Taylor 
+ * Homework 3
  */
 public class Homework3 extends Application implements Serializable {
 
-    ArrayList<ToDoItem> list = new ArrayList<>();
+    // Create GridPanes
+    GridPane overallPane = new GridPane();
+    GridPane listControl = new GridPane();
+    GridPane buttonPane = new GridPane();
+    GridPane newPane = new GridPane();
 
     // Create menu bar
     MenuBar menuBar = new MenuBar();
@@ -45,19 +47,12 @@ public class Homework3 extends Application implements Serializable {
     Button raise = new Button("Raise");
     Button lower = new Button("Lower");
     Button view = new Button("View Item Detail");
-
+    
+    // Create Array
     ObservableList<String> catObsList = FXCollections.observableArrayList();
     ListView<String> catListView = new ListView<>();
-
-    // Create GridPanes
-    GridPane overallPane = new GridPane();
-    GridPane listControl = new GridPane();
-    GridPane buttonPane = new GridPane();
-    GridPane newPane = new GridPane();
-    GridPane mnu = new GridPane();
-
     ListView<ToDoItem> toDoList = new ListView<>();
-
+    
     ToDoItem storedObject; //STORES OBJECT FOR LATER USE
     FileInputStream readFile2;
     ObjectInputStream readCatData;
@@ -66,9 +61,6 @@ public class Homework3 extends Application implements Serializable {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // list.setMinWidth (200.0);
-        // Stop method, override
-
         catMenu.getItems().add(editCat);
         menuBar.getMenus().add(catMenu);
         categories = new ComboBox(catObsList);
@@ -78,7 +70,6 @@ public class Homework3 extends Application implements Serializable {
 
         newPane.add(toDoList, 1, 1);
 
-        mnu.add(menuBar, 0, 0);
         buttonPane.add(item, 0, 1);
         buttonPane.add(titleText, 0, 2);
         buttonPane.add(category, 0, 3);
@@ -86,12 +77,11 @@ public class Homework3 extends Application implements Serializable {
         buttonPane.add(addButton, 0, 5);
         buttonPane.add(deleteButton, 0, 6);
 
-//        eventsPane.add(list, 2, 1);
         listControl.add(raise, 1, 0);
         listControl.add(lower, 2, 0);
         listControl.add(view, 3, 0);
 
-        overallPane.add(mnu, 0, 0);
+        overallPane.add(menuBar, 0, 0);
         overallPane.add(buttonPane, 0, 1);
         overallPane.add(newPane, 1, 1);
         overallPane.add(listControl, 1, 3);
@@ -101,34 +91,36 @@ public class Homework3 extends Application implements Serializable {
         primaryStage.setTitle("ToDo");
         primaryStage.show();
 
-        // Create separate method, readDataIn. Load data to application, call immediately after show
+        // Pass in files, check if they exist
         try {
             String filePath1 = "todoitemdata.dat";
             String filePath2 = "categoriesdata.dat";
             File toDoFile = new File(filePath1);
             File categoryFile = new File(filePath2);
 
-            if (doesFileExist(toDoFile) == false) {
+            if (doesFileExist(toDoFile) == false) { // If file does not exits, create
                 System.out.println("File 1 created: " + toDoFile.createNewFile());
             } else {
-                System.out.println("File 1 exists");
-                this.readFile = new FileInputStream("todoitemdata.dat"); // Pass in originial file
+                System.out.println("File 1 exists"); // If file exists, create ObjectInputStream
+                this.readFile = new FileInputStream("todoitemdata.dat");
                 this.readToDoData = new ObjectInputStream(readFile);
             }
             if (doesFileExist(categoryFile) == false) {
                 System.out.println("File 2 created: " + categoryFile.createNewFile());
             } else {
                 System.out.println("File 2 exists");
-                readFile2 = new FileInputStream("categoriesdata.dat"); // Pass in originial file
+                readFile2 = new FileInputStream("categoriesdata.dat");
                 readCatData = new ObjectInputStream(readFile2);
 
             }
+            readAndSet(); // Call after passing in the files to read and set data
 
-            readAndSet();
-
-        } catch (EOFException e) {
-            // Since it is an endless loop, this will catch when the file ends and allow the program to continue
+        } catch (IOException e) {
+            System.out.println(e);
         }
+
+        readFile.close();
+        readFile2.close();
 
         editCat.setOnAction(e -> {
             EditCategories(); // Call edit categories when menu is selected
@@ -174,8 +166,13 @@ public class Homework3 extends Application implements Serializable {
         });
     }
 
+    /**
+     * ********************************************
+     * Writing to file on close 
+     *******************************************
+     */
     @Override
-    public void stop() throws FileNotFoundException {
+    public void stop() throws FileNotFoundException { // On program end, call createFile to pass data into each file
         createFile("categoriesdata.dat", catObsList);
         createFile("todoitemdata.dat", toDoList.getItems());
     }
@@ -183,12 +180,10 @@ public class Homework3 extends Application implements Serializable {
     public void createFile(String fileName, ObservableList list) {
         try {
             FileOutputStream output = new FileOutputStream(fileName);
-            ObjectOutputStream objectOutput = new ObjectOutputStream(output);
+            ObjectOutputStream objectOutput = new ObjectOutputStream(output); // Create OutputStream for passed in file
 
-            System.out.println("Closing");
-            for (int i = 0; i < list.size(); i++) {
-                System.out.println(list.get(i));
-                objectOutput.writeObject(list.get(i));
+            for (int i = 0; i < list.size(); i++) { // Loop through all objects in the list
+                objectOutput.writeObject(list.get(i)); // Write the object to the file
             }
             objectOutput.close();
 
@@ -197,28 +192,28 @@ public class Homework3 extends Application implements Serializable {
         }
     }
 
-    public void readAndSet() {
-        System.out.println("Here!");
+    /**
+     * ********************************************
+     * Reading from file on open 
+     *******************************************
+     */
+    public void readAndSet() { // Reads data from the files and adds them to obs list/listView
         try {
-            while (true) {
-                String cat = (String) readCatData.readObject();
-                System.out.println(cat);
-                catObsList.add(cat);
-                catListView.getItems().add(cat);
+            while (true) { // For categories
+                String cat = (String) readCatData.readObject(); // Read the object from the file
+                catObsList.add(cat); // Add it to the observable list
+                catListView.getItems().add(cat); // Add it to the listView
             }
-        } catch (EOFException e) {
-
+        } catch (EOFException e) { // Catch the end of file
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println(ex);
         }
-        try {
+        try { // For to-do listView
             while (true) {
-                ToDoItem toDoItem = (ToDoItem) readToDoData.readObject();
-                System.out.println(toDoItem);
-                toDoList.getItems().add(toDoItem);
+                ToDoItem toDoItem = (ToDoItem) readToDoData.readObject(); // Read object from the file
+                toDoList.getItems().add(toDoItem); // Add it to the listView
             }
         } catch (EOFException e) {
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -301,7 +296,7 @@ public class Homework3 extends Application implements Serializable {
         });
     }
 
-    public boolean doesFileExist(File file) {
+    public boolean doesFileExist(File file) { // Checks if file exists
         return file.exists();
     }
 
